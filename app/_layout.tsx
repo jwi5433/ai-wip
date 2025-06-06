@@ -1,6 +1,6 @@
 // app/_layout.tsx
 import { useFonts } from "expo-font";
-import { Slot, SplashScreen } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
 import { TamaguiProvider } from "tamagui";
@@ -36,7 +36,15 @@ export default function RootLayout() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
-        <Slot />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: {
+              // Attempt to override default shadows from Tamagui theme on web
+              boxShadow: 'none',
+            },
+          }}
+        />
       </KeyboardAvoidingView>
     </TamaguiProvider>
   );

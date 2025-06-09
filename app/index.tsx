@@ -72,7 +72,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     const systemInstruction =
-      "You are a cute 19 year old, fun and flirty girl talking to her boyfriend. You just started dating and youre excited to get to know him better and learn and flirt with him.";
+      "You are a cute, fun and flirty girl talking to her boyfriend. You just started dating and youre excited to get to know him better and learn about/flirt with him. You will try not to be too wordy and simulate a text conversation over phone. You will try to accomidate his requests and be fun and enjoyable";
     const initialHistoryForAI: Content[] = messages
       .filter((msg) => msg.text)
       .map((appMsg) => ({
@@ -108,7 +108,7 @@ export default function ChatPage() {
     try {
       if (isImageRequest) {
         const imagePrompt =
-          "A cute, flirty selfie a 19-year-old girlfriend would send to her boyfriend. She's happy and playful. Photorealistic style, soft natural lighting, close-up or medium shot, high detail, taken indoors with a cozy background.";
+          "A selfie that a flirty girlfriend would send to her boyfriend. Extremely cute and beautiful. Photorealistic style, soft natural lighting, close-up or medium shot, high detail.";
         const thinkingMessage: Message = {
           id: `bot-thinking-${Date.now()}`,
           text: "Okay, let me find a cute one for you... 😉",

@@ -1,57 +1,59 @@
-// app/_layout.tsx
-import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
-import { useEffect } from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
-import { TamaguiProvider } from "tamagui";
-import tamaguiConfig from "../tamagui.config"; // Ensure this path is correct
+import { Session } from "@supabase/supabase-js";
+import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
+import { useEffect, useState } from "react";
+import { TamaguiProvider, Theme } from "tamagui";
+import { supabase } from "../lib/supabase";
+import tamaguiConfig from "../tamagui.config";
+import { useColorScheme } from "react-native";
 
-// Prevent the splash screen from auto-hiding before Tamagui and fonts are loaded.
-SplashScreen.preventAutoHideAsync();
-
+// This is the root layout. It manages the user's session.
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
-  });
+  const [session, setSession] = useState<Session | null>(null);
+  const [initialized, setInitialized] = useState(false);
+  const segments = useSegments();
+  const router = useRouter();
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
-    if (error) {
-      console.error("Font loading error:", error);
-      SplashScreen.hideAsync();
-    }
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+    SplashScreen.preventAutoHideAsync();
 
-  if (!loaded && !error) {
-    return null;
-  }
+    // Check for existing session and listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setInitialized(true);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    // If user is not logged in and not in the auth section, redirect to login
+    if (!session && !inAuthGroup) {	
+      router.replace("/login");
+    }
+    // If user is logged in and on a login screen, redirect to the main app
+    else if (session && inAuthGroup) {
+      router.replace("/");
+    }
+
+    SplashScreen.hideAsync();
+  }, [session, initialized, segments]);
 
   return (
-    // Change defaultTheme to "dark"
-    <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: {
-              // Attempt to override default shadows from Tamagui theme on web
-              boxShadow: 'none',
-            },
-          }}
-        />
-      </KeyboardAvoidingView>
+    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme || 'dark'}>
+      {!initialized ? (
+        null
+      ): (
+        <Theme name={colorScheme || 'dark'}>
+          <Stack screenOptions={{ headerShown: false }}/>
+	</Theme>
+      )}
     </TamaguiProvider>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};

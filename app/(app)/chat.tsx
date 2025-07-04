@@ -1,8 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  ScrollView as RNScrollView
-} from "react-native";
+import { ScrollView as RNScrollView } from "react-native";
 import {
   Avatar,
   ScrollView,
@@ -10,7 +8,7 @@ import {
   Text,
   useTheme,
   XStack,
-  YStack
+  YStack,
 } from "tamagui";
 
 import { Content } from "@google/genai";
@@ -92,7 +90,7 @@ export default function ChatPage() {
     // The systemInstruction now comes from the params!
     chatInstanceRef.current = startChatWithHistory(
       systemInstruction,
-      initialHistoryForAI
+      initialHistoryForAI,
     );
   }, [systemInstruction]); // Dependency array updated to re-initialize chat for new characters
 
@@ -109,7 +107,7 @@ export default function ChatPage() {
     setInputText("");
     setIsLoading(true);
     const isImageRequest = imageRequestTriggers.some((trigger) =>
-      lowercasedInput.includes(trigger)
+      lowercasedInput.includes(trigger),
     );
     let preliminaryBotMessageId: string | null = null;
 
@@ -143,7 +141,7 @@ export default function ChatPage() {
         setMessages((prevMessages) =>
           prevMessages
             .filter((msg) => msg.id !== preliminaryBotMessageId)
-            .concat(finalBotMessage)
+            .concat(finalBotMessage),
         );
       } else {
         if (!chatInstanceRef.current) {
@@ -158,7 +156,7 @@ export default function ChatPage() {
         }
         const aiResponseText = await sendMessageToChat(
           chatInstanceRef.current,
-          userInputText
+          userInputText,
         );
         const botTextMessage: Message = {
           id: `bot-txt-${Date.now()}`,
@@ -179,7 +177,7 @@ export default function ChatPage() {
         setMessages((prevMessages) =>
           prevMessages
             .filter((msg) => msg.id !== preliminaryBotMessageId)
-            .concat(errorBotMessage)
+            .concat(errorBotMessage),
         );
       } else {
         setMessages((prevMessages) => [...prevMessages, errorBotMessage]);
@@ -207,7 +205,8 @@ export default function ChatPage() {
         borderBottomColor="$gray4"
         alignItems="center"
         jc="center"
-        backgroundColor="$backgroundFocus">
+        backgroundColor="$backgroundFocus"
+      >
         <YStack alignItems="center" space="$2">
           <Avatar circular size="$8">
             <Avatar.Image
@@ -225,7 +224,8 @@ export default function ChatPage() {
       <ScrollView
         ref={scrollViewRef}
         flex={1}
-        contentContainerStyle={{ paddingVertical: "$3" }}>
+        contentContainerStyle={{ paddingVertical: "$3" }}
+      >
         {messages.map((msg) => (
           <MessageBubble key={msg.id} message={msg} />
         ))}
@@ -239,10 +239,10 @@ export default function ChatPage() {
         borderTopWidth={1}
         borderTopColor="$gray4"
         backgroundColor="$backgroundFocus"
-        space="$2.5">
+        space="$2.5"
+      >
         {/* ... (Input bar remains the same) ... */}
       </XStack>
     </YStack>
   );
 }
-

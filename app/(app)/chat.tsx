@@ -15,8 +15,8 @@ import { Content } from "@google/genai";
 import {
   sendMessageToChat,
   startChatWithHistory,
-} from "../../lib/services/chatService";
-import { AiImage, ImageDataUrl } from "../../lib/services/imageService";
+} from "@/lib/services/chatService";
+import { AiImage, ImageDataUrl } from "@/lib/services/imageService";
 
 const imageRequestTriggers: string[] = [
   "send me a picture",
@@ -79,7 +79,6 @@ export default function ChatPage() {
     return () => clearTimeout(timer);
   }, [messages, scrollToBottom]);
 
-  // 3. UPDATE THE CHAT INITIALIZATION TO USE THE NEW PERSONALITY
   useEffect(() => {
     const initialHistoryForAI: Content[] = messages
       .filter((msg) => msg.text)
@@ -87,12 +86,11 @@ export default function ChatPage() {
         role: appMsg.sender === "user" ? "user" : "model",
         parts: [{ text: appMsg.text! }],
       }));
-    // The systemInstruction now comes from the params!
     chatInstanceRef.current = startChatWithHistory(
       systemInstruction,
       initialHistoryForAI,
     );
-  }, [systemInstruction]); // Dependency array updated to re-initialize chat for new characters
+  }, [systemInstruction]);
 
   const handleSend = async () => {
     if (inputText.trim() === "") return;
@@ -191,13 +189,11 @@ export default function ChatPage() {
 
   const MessageBubble = ({ message }: { message: Message }) => {
     const isUser = message.sender === "user";
-    // ... (This component's code remains the same, no changes needed here)
     return <Stack>...</Stack>;
   };
 
   return (
     <YStack flex={1} backgroundColor="$background">
-      {/* 5. UPDATE THE HEADER TO SHOW THE NEW AVATAR AND NAME */}
       <XStack
         paddingVertical="$3"
         paddingHorizontal="$4"
@@ -240,9 +236,7 @@ export default function ChatPage() {
         borderTopColor="$gray4"
         backgroundColor="$backgroundFocus"
         space="$2.5"
-      >
-        {/* ... (Input bar remains the same) ... */}
-      </XStack>
+      ></XStack>
     </YStack>
   );
 }

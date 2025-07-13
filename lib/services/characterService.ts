@@ -1,14 +1,13 @@
 import "react-native-get-random-values";
 import { supabase } from "../supabase";
 import { AiImage } from "./imageService";
-
-// This setup matches your working chatService.ts file
+import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from "@env";
-import { GoogleGenAI, GoogleGenAIOptions, Type } from "@google/genai";
 
-const options: GoogleGenAIOptions = { apiKey: GEMINI_API_KEY as string };
-const genAI = new GoogleGenAI(options);
-// ---
+// Initialize the AI instance with the API key
+const genAI = new GoogleGenAI({
+  apiKey: GEMINI_API_KEY, // Explicitly pass the API key here
+});
 
 export interface Character {
   id: number;
@@ -27,45 +26,29 @@ export type TemporaryCharacterData = Omit<Character, "id" | "avatar_url"> & {
 
 export const generateTemporaryCharacter =
   async (): Promise<TemporaryCharacterData | null> => {
-    console.log("Generating new AI character using JSON mode...");
+    console.log("Generating new AI character...");
 
-    // THIS IS THE CORRECTED LINE
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `Create a detailed dating profile for a fictional female person.`;
+    const prompt = `
+    Generate a detailed dating profile for a fictional female person.
+    YOU MUST RESPOND WITH ONLY A VALID JSON OBJECT, AND NOTHING ELSE.
+    The JSON object must have these exact keys: "name", "age", "occupation", "bio", "system_instruction", "image_prompt".
+  `;
 
     try {
-      const result = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              name: { type: Type.STRING },
-              age: { type: Type.NUMBER },
-              occupation: { type: Type.STRING },
-              bio: { type: Type.STRING },
-              system_instruction: { type: Type.STRING },
-              image_prompt: { type: Type.STRING },
-            },
-            required: [
-              "name",
-              "age",
-              "occupation",
-              "bio",
-              "system_instruction",
-              "image_prompt",
-            ],
-          },
-        },
+      // Use generateContent directly from genAI.models
+      const result = await genAI.models.generateContent({
+        model: "gemini-2.5-pro",
+        contents: prompt,
       });
 
-      const responseText = result.response.text();
+      // Access the response text correctly
+      const responseText = result.text; // This should now give you the generated text
 
       if (!responseText) {
         throw new Error("AI response was empty.");
       }
 
+      // Parse the JSON response
       const characterData = JSON.parse(responseText) as Omit<
         TemporaryCharacterData,
         "avatar_url"
@@ -88,15 +71,10 @@ export const generateTemporaryCharacter =
 export const saveMatchedCharacter = async (
   character: TemporaryCharacterData,
 ): Promise<Character | null> => {
-  console.log("Saving matched character to database:", character.name);
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  if (!user) {
-    console.error("No user logged in to save match.");
-    return null;
-  }
+  if (!user) return null;
 
   const { data, error } = await supabase
     .from("characters")
@@ -108,20 +86,14 @@ export const saveMatchedCharacter = async (
     console.error("Error saving character:", error.message);
     return null;
   }
-
   return data;
 };
 
 export const fetchMatchedCharacters = async (): Promise<Character[]> => {
-  console.log("Fetching matched characters from database...");
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  if (!user) {
-    console.error("No user logged in to fetch matches.");
-    return [];
-  }
+  if (!user) return [];
 
   const { data, error } = await supabase
     .from("characters")
@@ -132,6 +104,5 @@ export const fetchMatchedCharacters = async (): Promise<Character[]> => {
     console.error("Error fetching matches:", error.message);
     return [];
   }
-
   return data || [];
 };

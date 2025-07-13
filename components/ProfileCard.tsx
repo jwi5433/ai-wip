@@ -1,129 +1,131 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
-import {
-  H3,
-  Image,
-  Paragraph,
-  Text,
-  YStack,
-  styled,
-  ScrollView,
-} from "tamagui";
-import { BlurView } from "expo-blur";
-// CORRECTED: The path now goes up one level to the root, then into lib.
-import { AiImage } from "../lib/services/imageService";
+import { Card, H2, Image, Paragraph, XStack, YStack, useTheme } from "tamagui";
+import { LinearGradient } from "@tamagui/linear-gradient";
+import { Heart, X } from "@tamagui/lucide-icons";
+import ActionButton from "./ActionButton";
 
-type CardProps = {
-  card: {
-    name: string;
-    age: number;
-    occupation: string;
-    bio: string;
-    image_prompt: string;
-  };
+type ProfileCardProps = {
+  name: string;
+  age: number;
+  occupation: string;
+  imageSrc: any;
+  onLike?: () => void;
+  onPass?: () => void;
 };
 
-const StyledLinearGradient = styled(LinearGradient, {
-  name: "StyledLinearGradient",
-  position: "absolute",
-  height: "100%",
-  width: "100%",
-});
-
-export const ProfileCard = ({ card }: CardProps) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  useEffect(() => {
-    const loadImage = async () => {
-      if (card?.image_prompt && !imageUrl) {
-        setIsLoading(true);
-        const generatedUrl = await AiImage(card.image_prompt);
-        setImageUrl(generatedUrl || null);
-        setIsLoading(false);
-      }
-    };
-    loadImage();
-  }, [card]);
-
-  if (!card) return null;
-
+export default function ProfileCard({
+  name,
+  age,
+  occupation,
+  imageSrc,
+  onLike,
+  onPass,
+}: ProfileCardProps) {
   return (
-    <YStack
-      f={1}
-      br="$6"
-      ov="hidden"
-      elevation="$2"
-      bg="$gray4"
-      onPress={() => setIsExpanded(!isExpanded)}
-      pressStyle={{ scale: isExpanded ? 1 : 0.995 }}
-      animation="bouncy"
+    <Card
+      flex={1}
+      bordered={false}
+      br="$4"
+      overflow="hidden"
+      maxHeight="80vh"
+      minHeight={600}
+      width="100%"
+      maxWidth={375}
+      shadowColor="$shadowColor"
+      shadowOffset={{ width: 0, height: 10 }}
+      shadowRadius={25}
+      shadowOpacity={0.4}
+      elevation={10}
+      backgroundColor="$transparent"
     >
-      {isLoading ? (
-        <YStack f={1} jc="center" ai="center">
-          <ActivityIndicator />
-        </YStack>
-      ) : imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={StyleSheet.absoluteFill} />
-      ) : null}
+      {/* Background Image */}
+      <Card.Background>
+        <Image source={imageSrc} width="100%" height="100%" objectFit="cover" />
+      </Card.Background>
 
-      <StyledLinearGradient
-        colors={["transparent", "rgba(0,0,0,0.2)", "rgba(0,0,0,0.9)"]}
-        style={StyleSheet.absoluteFill}
+      {/* Enhanced Pink Gradient Overlay - matching Figma */}
+      <LinearGradient
+        colors={[
+          "rgba(0,0,0,0)",
+          "rgba(0,0,0,0)",
+          "rgba(244,114,182,0.4)",
+          "rgba(244,114,182,0.7)",
+          "rgba(244,114,182,0.9)",
+        ]}
+        start={[0.5, 0.3]}
+        end={[0.5, 1]}
+        locations={[0, 0.4, 0.7, 0.85, 1]}
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
       />
 
-      <YStack
-        p="$4"
-        zIndex={1}
-        jc="flex-end"
-        f={1}
-        o={isExpanded ? 0 : 1}
-        animation="quick"
+      {/* Content Container */}
+      <Card.Footer
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        padding="$4"
+        paddingBottom="$4"
       >
-        <H3 col="white" fow="bold">
-          {card.name},{" "}
-          <Text fow="normal" fontSize="$6" col="white">
-            {card.age}
-          </Text>
-        </H3>
-        <Paragraph col="$gray1" fow="600">
-          {card.occupation}
-        </Paragraph>
-      </YStack>
-
-      {isExpanded && (
-        <YStack
-          pos="absolute"
-          t={0}
-          l={0}
-          r={0}
-          b={0}
-          jc="center"
-          ai="center"
-          zIndex={2}
-          animation="quick"
-          enterStyle={{ o: 0 }}
-          o={1}
+        <XStack
+          justifyContent="space-between"
+          alignItems="flex-end"
+          width="100%"
         >
-          <BlurView
-            intensity={25}
-            tint="dark"
-            style={StyleSheet.absoluteFill}
-          />
-          <ScrollView
-            f={1}
-            w="100%"
-            p="$6"
-            contentContainerStyle={{ jc: "center", f: 1 }}
-          >
-            <Paragraph theme="dark" size="$6" ta="center">
-              {card.bio}
+          {/* Text Content */}
+          <YStack flex={1} gap="$1">
+            <H2
+              fontFamily="$heading"
+              color="$white"
+              fontSize="$4"
+              fontWeight="$2"
+              textShadowColor="rgba(0,0,0,0.8)"
+              textShadowOffset={{ width: 0, height: 2 }}
+              textShadowRadius={6}
+              textTransform="uppercase"
+            >
+              {name}, {age}
+            </H2>
+            <Paragraph
+              fontFamily="$body"
+              color="$white"
+              fontSize="$2"
+              fontWeight="$1"
+              textShadowColor="rgba(0,0,0,0.7)"
+              textShadowOffset={{ width: 0, height: 1 }}
+              textShadowRadius={4}
+              opacity={0.95}
+              textTransform="uppercase"
+              letterSpacing={0.5}
+            >
+              {occupation}
             </Paragraph>
-          </ScrollView>
-        </YStack>
-      )}
-    </YStack>
+          </YStack>
+
+          {/* Action Buttons */}
+          <XStack gap="$3" alignItems="center" marginLeft="$3">
+            <ActionButton
+              icon={X}
+              onPress={onPass || (() => console.log("Pass"))}
+              backgroundColor="$card"
+              borderColor="$border"
+              iconColor="$foreground"
+              size="large"
+            />
+            <ActionButton
+              icon={Heart}
+              onPress={onLike || (() => console.log("Like"))}
+              backgroundColor="$brand"
+              borderColor="$brand"
+              iconColor="$background"
+              size="large"
+            />
+          </XStack>
+        </XStack>
+      </Card.Footer>
+    </Card>
   );
-};
+}

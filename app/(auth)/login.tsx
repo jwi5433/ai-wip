@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Alert } from "react-native";
 import { Button, H3, Input, Paragraph, YStack } from "tamagui";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -51,11 +51,11 @@ export default function LoginScreen() {
       />
       <YStack pt="$2" space="$2">
         <Button
-          theme="active"
           backgroundColor="$pink9"
           color="$black"
           disabled={loading}
-          onPress={signInWithEmail}>
+          onPress={signInWithEmail}
+        >
           Sign in
         </Button>
         <Button variant="outlined" disabled={loading} onPress={signUpWithEmail}>

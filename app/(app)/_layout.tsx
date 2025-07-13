@@ -1,29 +1,21 @@
-import { Link, Stack } from "expo-router";
-import { Pressable } from "react-native";
-import { MessageSquare } from "@tamagui/lucide-icons";
-import { useTheme } from "tamagui";
+import { Stack } from "expo-router";
 
 export default function AppLayout() {
-  const theme = useTheme();
-
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: theme.background.val },
-        headerTintColor: theme.color.val,
-        headerShadowVisible: false, // Removes separator line for all screens
-      }}
-    >
+    // 1. Add this prop to make "no header" the default for this stack.
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* "index" will now correctly have no header. */}
+      <Stack.Screen name="index" />
+
+      {/* 2. You now must explicitly re-enable headers for other screens. */}
       <Stack.Screen
-        name="index"
-        options={{
-          // This completely hides the header for the main swiping screen
-          headerShown: false,
-        }}
+        name="messages"
+        options={{ title: "Matches", headerShown: true }}
       />
-      <Stack.Screen name="matches" options={{ title: "Matches" }} />
-      <Stack.Screen name="chat" options={{ title: "Chat" }} />
-      <Stack.Screen name="Account" />
+      <Stack.Screen
+        name="chat"
+        options={{ title: "Chat", headerShown: true }}
+      />
     </Stack>
   );
 }

@@ -14,7 +14,7 @@ import {
 import {
   Character,
   fetchMatchedCharacters,
-} from "../../lib/services/characterService";
+} from "@/lib/services/characterService";
 
 export default function MatchesScreen() {
   const [matches, setMatches] = useState<Character[]>([]);

@@ -27310,6 +27310,7 @@
           "2": 16,
           "3": 24,
           "4": 30,
+          "6": 36,
           "true": 16
         },
         "weight": {
@@ -27317,6 +27318,7 @@
           "2": "700",
           "3": "700",
           "4": "700",
+          "6": "700",
           "true": "400"
         },
         "transform": {}
@@ -27328,6 +27330,7 @@
           "2": 16,
           "3": 24,
           "4": 30,
+          "6": 36,
           "true": 16
         },
         "weight": {
@@ -27335,6 +27338,7 @@
           "2": "700",
           "3": "700",
           "4": "700",
+          "6": "700",
           "true": "400"
         },
         "transform": {}
@@ -27430,7 +27434,7 @@
     },
     "themes": {
       "light": {
-        "brand": "#F472B6",
+        "brand": "#DC6ACF",
         "background": "#F9FAFB",
         "foreground": "#09090B",
         "card": "#FFFFFF",
@@ -27442,8 +27446,8 @@
         "id": "light"
       },
       "dark": {
-        "brand": "#F472B6",
-        "brandHover": "#E879F9",
+        "brand": "#DC6ACF",
+        "brandHover": "#C85EBD",
         "background": "#09090B",
         "foreground": "#E5E5E5",
         "card": "#27272A",
@@ -27461,7 +27465,7 @@
           "isVar": true,
           "key": "$pink400",
           "name": "c-pink400",
-          "val": "#F472B6",
+          "val": "#DC6ACF",
           "variable": ""
         },
         "zinc950": {
@@ -27510,7 +27514,7 @@
           "isVar": true,
           "key": "$fuchsia400",
           "name": "c-fuchsia400",
-          "val": "#E879F9",
+          "val": "#C85EBD",
           "variable": ""
         },
         "neutral200": {
@@ -27612,7 +27616,7 @@
           "isVar": true,
           "key": "$2",
           "name": "t-size-2",
-          "val": 8,
+          "val": 16,
           "variable": ""
         },
         "3": {
@@ -27633,7 +27637,14 @@
           "isVar": true,
           "key": "$5",
           "name": "t-size-5",
-          "val": 20,
+          "val": 44,
+          "variable": ""
+        },
+        "6": {
+          "isVar": true,
+          "key": "$6",
+          "name": "t-size-6",
+          "val": 52,
           "variable": ""
         },
         "true": {
@@ -27678,6 +27689,20 @@
           "key": "$4",
           "name": "t-radius-4",
           "val": 16,
+          "variable": ""
+        },
+        "5": {
+          "isVar": true,
+          "key": "$5",
+          "name": "t-radius-5",
+          "val": 20,
+          "variable": ""
+        },
+        "6": {
+          "isVar": true,
+          "key": "$6",
+          "name": "t-radius-6",
+          "val": 24,
           "variable": ""
         },
         "true": {
@@ -27807,7 +27832,7 @@
         "isVar": true,
         "key": "$pink400",
         "name": "c-pink400",
-        "val": "#F472B6",
+        "val": "#DC6ACF",
         "variable": ""
       },
       "$color.zinc950": {
@@ -27856,7 +27881,7 @@
         "isVar": true,
         "key": "$fuchsia400",
         "name": "c-fuchsia400",
-        "val": "#E879F9",
+        "val": "#C85EBD",
         "variable": ""
       },
       "$color.neutral200": {
@@ -27954,7 +27979,7 @@
         "isVar": true,
         "key": "$2",
         "name": "t-size-2",
-        "val": 8,
+        "val": 16,
         "variable": ""
       },
       "$size.3": {
@@ -27975,7 +28000,14 @@
         "isVar": true,
         "key": "$5",
         "name": "t-size-5",
-        "val": 20,
+        "val": 44,
+        "variable": ""
+      },
+      "$size.6": {
+        "isVar": true,
+        "key": "$6",
+        "name": "t-size-6",
+        "val": 52,
         "variable": ""
       },
       "$size.true": {
@@ -28018,6 +28050,20 @@
         "key": "$4",
         "name": "t-radius-4",
         "val": 16,
+        "variable": ""
+      },
+      "$radius.5": {
+        "isVar": true,
+        "key": "$5",
+        "name": "t-radius-5",
+        "val": 20,
+        "variable": ""
+      },
+      "$radius.6": {
+        "isVar": true,
+        "key": "$6",
+        "name": "t-radius-6",
+        "val": 24,
         "variable": ""
       },
       "$radius.true": {

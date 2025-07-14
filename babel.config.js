@@ -20,7 +20,6 @@ module.exports = function (api) {
           components: ["tamagui"],
           config: "./tamagui.config.ts",
           logTimings: true,
-          disableExtraction: process.env.NODE_ENV === "development",
         },
       ],
       [
@@ -32,6 +31,7 @@ module.exports = function (api) {
           allowUndefied: true,
         },
       ],
+      "expo-router/babel",
       // Removed the deprecated expo-router plugin
       // "expo-router/babel",
       // NOTE: this is only necessary if you are using reanimated for animations

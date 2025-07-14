@@ -1,93 +1,146 @@
-import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator } from "react-native";
-import {
-  Avatar,
-  H3,
-  ListItem,
-  Paragraph,
-  Separator,
-  YGroup,
-  YStack,
-} from "tamagui";
+import React from "react";
+import { Pressable, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { YStack, XStack, Text, ScrollView, Theme } from "tamagui";
+import { ArrowLeft } from "@tamagui/lucide-icons";
+import { useMatches } from "@/hooks/useMatches";
 
-import {
-  Character,
-  fetchMatchedCharacters,
-} from "@/lib/services/characterService";
+import ProfileAvatar from "@/components/ProfileAvatar";
+import ProfilePreview from "@/components/ProfilePreview";
 
-export default function MatchesScreen() {
-  const [matches, setMatches] = useState<Character[]>([]);
-  const [loading, setLoading] = useState(true);
+// Mock Data for the UI
+const messages = [
+  {
+    id: "1",
+    name: "Megan",
+    lastMessage: "You're so annoying...",
+    time: "12 MINS",
+    avatarSrc: require("@/assets/images/woman1.png"),
+  },
+  {
+    id: "2",
+    name: "Britt",
+    lastMessage: "I'm completely obsessed...",
+    time: "12 MINS",
+    avatarSrc: require("@/assets/images/woman2.png"),
+  },
+];
 
-  useEffect(() => {
-    const loadMatches = async () => {
-      setLoading(true);
-      const matchedCharacters = await fetchMatchedCharacters();
-      setMatches(matchedCharacters);
-      setLoading(false);
-    };
+// This is the corrected MessageRow component
+function MessageRow({ name, lastMessage, time, avatarSrc }: any) {
+  const router = useRouter();
+  return (
+    <Pressable onPress={() => router.push("/chat")}>
+      <XStack
+        gap="$3"
+        alignItems="center"
+        paddingHorizontal="$4"
+        paddingVertical="$2.5"
+      >
+        <ProfileAvatar src={avatarSrc} size={64} />
+        <YStack flex={1}>
+          <Text fontFamily="$body" fontSize="$3" color="$foreground">
+            {name}
+          </Text>
+          <Text
+            fontFamily="$body"
+            fontSize="$1"
+            color="$gray10"
+            numberOfLines={1}
+          >
+            {lastMessage}
+          </Text>
+        </YStack>
+        <Text fontFamily="$body" fontSize="$1" color="$gray10">
+          {time}
+        </Text>
+      </XStack>
+    </Pressable>
+  );
+}
 
-    loadMatches();
-  }, []);
+export default function MatchesPage() {
+  const router = useRouter();
+  const { matches, loading } = useMatches();
 
   if (loading) {
     return (
-      <YStack f={1} jc="center" ai="center">
+      <YStack flex={1} jc="center" ai="center">
         <ActivityIndicator />
       </YStack>
     );
   }
 
-  if (matches.length === 0) {
-    return (
-      <YStack f={1} jc="center" ai="center" p="$4" gap="$3">
-        <H3>No Matches Yet</H3>
-        <Paragraph col="$gray10" ta="center">
-          Go back and swipe right on some profiles to get started!
-        </Paragraph>
-      </YStack>
-    );
-  }
-
   return (
-    <YStack f={1} p="$4">
-      <H3 mb="$4">Matches</H3>
-      <YGroup als="center" bordered>
-        {matches.map((character, index) => (
-          <React.Fragment key={character.id}>
-            <Link
-              href={{
-                pathname: "/chat",
-                params: {
-                  name: character.name,
-                  avatarUrl: character.avatar_url,
-                  systemInstruction: character.system_instruction,
-                  imagePrompt: character.image_prompt,
-                },
-              }}
-              asChild
+    <Theme name="dark">
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#313131" }}>
+        <YStack flex={1} backgroundColor="$background">
+          {/* Header */}
+          <XStack
+            justifyContent="space-between"
+            alignItems="center"
+            padding="$3"
+          >
+            <Pressable onPress={() => router.back()}>
+              <YStack width={40} height={40} jc="center" ai="center">
+                <ArrowLeft color="$color" size={40} />
+              </YStack>
+            </Pressable>
+            <Text fontFamily="$body" fontSize="$2" color="$brand">
+              NEW MATCHES
+            </Text>
+            <YStack width={40} />
+          </XStack>
+
+          {/* New Matches Horizontal Scroll */}
+          {matches.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              paddingVertical="$2"
             >
-              <YGroup.Item>
-                <ListItem
-                  hoverTheme
-                  pressTheme
-                  title={character.name}
-                  subTitle="Say hi to start the conversation!"
-                  icon={
-                    <Avatar circular size="$6">
-                      <Avatar.Image src={character.avatar_url} />
-                      <Avatar.Fallback bc="pink" />
-                    </Avatar>
-                  }
-                />
-              </YGroup.Item>
-            </Link>
-            {/* CORRECTED: Use the standalone <Separator /> component */}
-            {index < matches.length - 1 && <Separator />}
-          </React.Fragment>
-        ))}
-      </YGroup>
-    </YStack>
+              <XStack gap="$3" paddingHorizontal="$4">
+                {matches.map((match) => (
+                  <ProfilePreview
+                    key={match.id}
+                    name={match.name}
+                    avatarSrc={match.avatar_url}
+                    size={80}
+                  />
+                ))}
+              </XStack>
+            </ScrollView>
+          ) : (
+            <Text padding="$4" color="$gray10">
+              No new matches yet.
+            </Text>
+          )}
+
+          {/* Messages Vertical List */}
+          <YStack
+            borderTopWidth={1}
+            borderTopColor="$gray8"
+            paddingTop="$2"
+            flex={1}
+          >
+            <Text
+              fontFamily="$body"
+              fontSize="$2"
+              color="$foreground"
+              paddingHorizontal="$4"
+              paddingBottom="$2"
+            >
+              MESSAGES
+            </Text>
+            <ScrollView>
+              {messages.map((msg) => (
+                <MessageRow key={msg.id} {...msg} />
+              ))}
+            </ScrollView>
+          </YStack>
+        </YStack>
+      </SafeAreaView>
+    </Theme>
   );
 }

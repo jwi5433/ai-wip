@@ -24,12 +24,12 @@ export default function ProfileCard({
     <Card
       flex={1}
       bordered={false}
-      br="$4"
+      br="$6"
       overflow="hidden"
       maxHeight="80vh"
       minHeight={600}
       width="100%"
-      maxWidth={375}
+      maxWidth={400}
       shadowColor="$shadowColor"
       shadowOffset={{ width: 0, height: 10 }}
       shadowRadius={25}
@@ -37,12 +37,10 @@ export default function ProfileCard({
       elevation={10}
       backgroundColor="$transparent"
     >
-      {/* Background Image */}
       <Card.Background>
         <Image source={imageSrc} width="100%" height="100%" objectFit="cover" />
       </Card.Background>
 
-      {/* Enhanced Pink Gradient Overlay - matching Figma */}
       <LinearGradient
         colors={[
           "rgba(0,0,0,0)",
@@ -61,7 +59,6 @@ export default function ProfileCard({
         bottom={0}
       />
 
-      {/* Content Container */}
       <Card.Footer
         position="absolute"
         bottom={0}
@@ -79,9 +76,9 @@ export default function ProfileCard({
           <YStack flex={1} gap="$1">
             <H2
               fontFamily="$heading"
-              color="$white"
+              color="$foreground"
               fontSize="$4"
-              fontWeight="$2"
+              fontWeight="$1"
               textShadowColor="rgba(0,0,0,0.8)"
               textShadowOffset={{ width: 0, height: 2 }}
               textShadowRadius={6}
@@ -91,7 +88,7 @@ export default function ProfileCard({
             </H2>
             <Paragraph
               fontFamily="$body"
-              color="$white"
+              color="$foreground"
               fontSize="$2"
               fontWeight="$1"
               textShadowColor="rgba(0,0,0,0.7)"
@@ -105,7 +102,6 @@ export default function ProfileCard({
             </Paragraph>
           </YStack>
 
-          {/* Action Buttons */}
           <XStack gap="$3" alignItems="center" marginLeft="$3">
             <ActionButton
               icon={X}

@@ -1,59 +1,28 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView as RNScrollView, ActivityIndicator } from "react-native";
+import {
+  ScrollView as RNScrollView,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import {
   Avatar,
   Button,
-  Image,
-  Input,
   ScrollView,
   Text,
   Theme,
   XStack,
   YStack,
 } from "tamagui";
-import { ArrowLeft, Send } from "@tamagui/lucide-icons";
-import { useChat, Message } from "@/hooks/useChat";
+import { ArrowLeft } from "@tamagui/lucide-icons";
+import { useChat } from "@/hooks/useChat";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const MessageBubble = ({ message }: { message: Message }) => {
-  const isUser = message.sender === "user";
-  return (
-    <XStack
-      paddingHorizontal="$4"
-      paddingVertical="$2"
-      alignSelf={isUser ? "flex-end" : "flex-start"}
-      maxWidth="85%"
-    >
-      {!isUser && (
-        <Avatar circular size="$4" marginRight="$2.5">
-          <Avatar.Image
-            src={"https://placehold.co/150x150/FFC0CB/8B008B?text=AI"}
-          />
-          <Avatar.Fallback bc="$brand" />
-        </Avatar>
-      )}
-      <YStack>
-        {message.text && (
-          <Text
-            padding="$3"
-            borderRadius="$4"
-            backgroundColor={isUser ? "$brand" : "$gray8"}
-            color="$foreground"
-          >
-            {message.text}
-          </Text>
-        )}
-        {message.imageUrl && (
-          <Image
-            source={{ uri: message.imageUrl, width: 250, height: 250 }}
-            style={{ borderRadius: 12, marginTop: message.text ? 8 : 0 }}
-          />
-        )}
-      </YStack>
-    </XStack>
-  );
-};
+import { MessageBubble } from "@/components/MessageBubble";
+import { InputBar } from "@/components/InputBar";
+import { Pressable } from "react-native";
+import ProfilePreview from "@/components/ProfilePreview";
 
 export default function ChatPage() {
   const router = useRouter();
@@ -63,13 +32,11 @@ export default function ChatPage() {
     systemInstruction: string;
     imagePrompt: string;
   }>();
-
   const { messages, isLoading, handleSend } = useChat({
     systemInstruction:
       params.systemInstruction || "You are a helpful assistant.",
     selfieImagePrompt: params.imagePrompt || "A selfie of a person.",
   });
-
   const [inputText, setInputText] = useState("");
   const scrollViewRef = useRef<RNScrollView>(null);
 
@@ -86,63 +53,60 @@ export default function ChatPage() {
 
   return (
     <Theme name="dark">
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#191919" }}>
-        <YStack flex={1} backgroundColor="$background">
-          <XStack
-            alignItems="center"
-            paddingHorizontal="$3"
-            paddingVertical="$2"
-            borderBottomWidth={1}
-            borderBottomColor="$gray4"
-            space="$3"
-          >
-            <Button icon={ArrowLeft} chromeless onPress={() => router.back()} />
-            <Avatar circular size="$4">
-              <Avatar.Image src={params.avatarUrl} />
-              <Avatar.Fallback bc="$brand" />
-            </Avatar>
-            <Text fontSize="$4" fontWeight="600">
-              {params.name}
-            </Text>
-          </XStack>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#313131" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+        >
+          <YStack flex={1} backgroundColor="$background">
+            <XStack
+              justifyContent="space-between"
+              alignItems="flex-start"
+              paddingHorizontal="$3"
+              paddingVertical="$3"
+            >
+              <Pressable onPress={() => router.push("/messages")}>
+                <YStack
+                  width={40}
+                  height={40}
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <ArrowLeft
+                    color="$brand"
+                    borderWidth={2}
+                    borderColor="$brand"
+                    borderRadius="$2"
+                    size={40}
+                  />
+                </YStack>
+              </Pressable>
+              <ProfilePreview
+                name={params.name || "aria"}
+                avatarSrc={require("@/assets/images/woman1.png")}
+              />
+              <YStack width={40} />
+            </XStack>
+            <ScrollView ref={scrollViewRef} flex={1}>
+              {messages.map((msg, index) => (
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  nextMessage={messages[index + 1]}
+                />
+              ))}
+              {isLoading && <ActivityIndicator />}
+            </ScrollView>
 
-          <ScrollView
-            ref={scrollViewRef}
-            flex={1}
-            contentContainerStyle={{ paddingVertical: 10 }}
-          >
-            {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
-            ))}
-            {isLoading && (
-              <XStack justifyContent="center" padding="$4">
-                <ActivityIndicator size="small" color="#E54E77" />
-              </XStack>
-            )}
-          </ScrollView>
-
-          <XStack
-            padding="$3"
-            alignItems="center"
-            space="$3"
-            borderTopWidth={1}
-            borderTopColor="$gray4"
-          >
-            <Input
-              flex={1}
-              value={inputText}
-              onChangeText={setInputText}
-              placeholder="Type a message..."
-              onSubmitEditing={onSendPress}
+            <InputBar
+              inputText={inputText}
+              setInputText={setInputText}
+              onSendPress={onSendPress}
+              isLoading={isLoading}
             />
-            <Button
-              icon={Send}
-              onPress={onSendPress}
-              disabled={isLoading || !inputText.trim()}
-              circular
-            />
-          </XStack>
-        </YStack>
+          </YStack>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </Theme>
   );

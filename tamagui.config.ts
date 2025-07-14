@@ -3,21 +3,21 @@ import { shorthands } from "@tamagui/shorthands";
 
 const silkscreenFont = createFont({
   family: "Silkscreen",
-  size: { 1: 12, 2: 16, 3: 24, 4: 30, true: 16 },
+  size: { 1: 12, 2: 16, 3: 24, 4: 30, 6: 36, true: 16 },
   weight: { 1: "400", 2: "700", true: "400" },
   transform: {},
 });
 
 export const tokens = createTokens({
   color: {
-    pink400: "#F472B6",
-    zinc950: "#09090B",
+    pink400: "#DC6ACF",
+    zinc950: "#2D2D2D",
     white: "#FFFFFF",
     gray50: "#F9FAFB",
     gray200: "#E5E7EB",
     emerald500: "#10B981",
     red500: "#EF4444",
-    fuchsia400: "#E879F9",
+    fuchsia400: "#C85EBD",
     neutral200: "#E5E5E5",
     neutral900: "#262626",
     zinc800: "#27272A",
@@ -25,8 +25,17 @@ export const tokens = createTokens({
     transparent: "transparent",
   },
   space: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, true: 16 },
-  size: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, true: 16 },
-  radius: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, true: 8 },
+  size: {
+    0: 0,
+    1: 4,
+    2: 16,
+    3: 12,
+    4: 16,
+    5: 44,
+    6: 52,
+    true: 16,
+  },
+  radius: { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, true: 8 },
   zIndex: { 0: 0, 1: 100, true: 0 },
 });
 

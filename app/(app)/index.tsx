@@ -60,11 +60,11 @@ export default function HomeScreen() {
     <Theme name="dark">
       <StatusBar style="light" />
       <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-        <YStack flex={1} backgroundColor="$background" paddingHorizontal="$4">
+        <YStack flex={1} backgroundColor="$background" paddingHorizontal="$1">
           <XStack
             justifyContent="space-between"
             alignItems="center"
-            paddingVertical="$2"
+            paddingVertical="$1"
           >
             <Pressable>
               <YStack

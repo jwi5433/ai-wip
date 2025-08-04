@@ -1,8 +1,7 @@
-import { GEMINI_API_KEY } from "@env";
 import { GoogleGenAI, Content } from "@google/genai";
 
 const genAI = new GoogleGenAI({
-  apiKey: GEMINI_API_KEY,
+  apiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
 });
 
 interface Chat {

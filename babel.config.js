@@ -22,20 +22,7 @@ module.exports = function (api) {
           logTimings: true,
         },
       ],
-      [
-        "module:react-native-dotenv",
-        {
-          moduleName: "@env",
-          path: ".env",
-          safe: false,
-          allowUndefied: true,
-        },
-      ],
-      "expo-router/babel",
-      // Removed the deprecated expo-router plugin
-      // "expo-router/babel",
-      // NOTE: this is only necessary if you are using reanimated for animations
-      "react-native-reanimated/plugin",
+      "react-native-reanimated/plugin", // This MUST be last
     ],
   };
 };

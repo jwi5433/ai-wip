@@ -6,6 +6,8 @@ import { useColorScheme } from "react-native";
 import { TamaguiProvider } from "tamagui";
 import { supabase } from "@/lib/supabase";
 import tamaguiConfig from "@/tamagui.config";
+import "core-js/stable/structured-clone";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
@@ -53,11 +55,13 @@ export default function RootLayout() {
   }
 
   return (
-    <TamaguiProvider
-      config={tamaguiConfig}
-      defaultTheme={colorScheme ?? "dark"}
-    >
-      <Stack screenOptions={{ headerShown: false }} />
-    </TamaguiProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <TamaguiProvider
+        config={tamaguiConfig}
+        defaultTheme={colorScheme ?? "dark"}
+      >
+        <Stack screenOptions={{ headerShown: false }} />
+      </TamaguiProvider>
+    </GestureHandlerRootView>
   );
 }

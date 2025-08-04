@@ -66,7 +66,7 @@ export default function ChatPage() {
               paddingHorizontal="$3"
               paddingVertical="$3"
             >
-              <Pressable onPress={() => router.push("/messages")}>
+              <Pressable onPress={() => router.push("/matches")}>
                 <YStack
                   width={40}
                   height={40}
@@ -85,10 +85,18 @@ export default function ChatPage() {
               <ProfilePreview
                 name={params.name || "aria"}
                 avatarSrc={require("@/assets/images/woman1.png")}
+                borderWidth={2}
               />
               <YStack width={40} />
             </XStack>
-            <ScrollView ref={scrollViewRef} flex={1}>
+            <ScrollView
+              ref={scrollViewRef}
+              flex={1}
+              contentContainerStyle={{
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+              }}
+            >
               {messages.map((msg, index) => (
                 <MessageBubble
                   key={msg.id}

@@ -1,57 +1,90 @@
-import { Card, H2, Image, Paragraph, XStack, YStack, useTheme } from "tamagui";
+import React, { useState } from "react";
+import { Card, H2, Image, Paragraph, XStack, YStack } from "tamagui";
 import { LinearGradient } from "@tamagui/linear-gradient";
 import { Heart, X } from "@tamagui/lucide-icons";
 import ActionButton from "./ActionButton";
+import { TemporaryCharacterData } from "@/lib/services/characterService";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+import { BlurView } from "expo-blur";
 
 type ProfileCardProps = {
-  name: string;
-  age: number;
-  occupation: string;
-  imageSrc: any;
-  onLike?: () => void;
-  onPass?: () => void;
+  card: TemporaryCharacterData;
+  onLike: () => void;
+  onPass: () => void;
 };
 
 export default function ProfileCard({
-  name,
-  age,
-  occupation,
-  imageSrc,
+  card,
   onLike,
   onPass,
 }: ProfileCardProps) {
+  const [showSummary, setShowSummary] = useState(false);
+  const summaryAnimation = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: withTiming(summaryAnimation.value * -120, {
+            duration: 300,
+          }),
+        },
+      ],
+    };
+  });
+
+  const summaryContainerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: withTiming(summaryAnimation.value * -120, {
+            duration: 300,
+          }),
+        },
+      ],
+    };
+  });
+
+  if (!card) {
+    return null;
+  }
+
   return (
     <Card
-      flex={1}
+      width="98%"
+      alignSelf="center"
+      height="98%"
       bordered={false}
       br="$6"
       overflow="hidden"
-      maxHeight="80vh"
-      minHeight={600}
-      width="100%"
-      maxWidth={400}
       shadowColor="$shadowColor"
       shadowOffset={{ width: 0, height: 10 }}
       shadowRadius={25}
       shadowOpacity={0.4}
       elevation={10}
       backgroundColor="$transparent"
+      onPress={() => {
+        summaryAnimation.value = showSummary ? 0 : 1;
+        setShowSummary(!showSummary);
+      }}
     >
       <Card.Background>
-        <Image source={imageSrc} width="100%" height="100%" objectFit="cover" />
+        <Image
+          source={{ uri: card.avatar_url }}
+          resizeMode="cover"
+          width="100%"
+          height="100%"
+        />
       </Card.Background>
 
       <LinearGradient
-        colors={[
-          "rgba(0,0,0,0)",
-          "rgba(0,0,0,0)",
-          "rgba(244,114,182,0.4)",
-          "rgba(244,114,182,0.7)",
-          "rgba(244,114,182,0.9)",
-        ]}
-        start={[0.5, 0.3]}
-        end={[0.5, 1]}
-        locations={[0, 0.4, 0.7, 0.85, 1]}
+        colors={["rgba(0,0,0,0)", "rgba(220,106,207,0.6)", "rgba(0,0,0,0.8)"]}
+        start={[0.5, 0.35]}
+        end={[0.5, 1.5]}
         position="absolute"
         top={0}
         left={0}
@@ -65,63 +98,96 @@ export default function ProfileCard({
         left={0}
         right={0}
         padding="$4"
-        paddingBottom="$4"
       >
-        <XStack
-          justifyContent="space-between"
-          alignItems="flex-end"
-          width="100%"
+        <Animated.View style={animatedStyle}>
+          <XStack
+            justifyContent="space-between"
+            alignItems="flex-end"
+            width="100%"
+          >
+            <YStack flex={1} gap="$1" paddingBottom="$4">
+              <H2
+                fontFamily="$heading"
+                color="white"
+                fontSize="$4"
+                fontWeight="$1"
+                textShadowColor="rgba(0,0,0,1)"
+                textShadowOffset={{ width: 0, height: 2 }}
+                textShadowRadius={6}
+                textTransform="uppercase"
+              >
+                {card.name}, {card.age}
+              </H2>
+              <Paragraph
+                fontFamily="$body"
+                color="white"
+                fontSize="$2"
+                fontWeight="$1"
+                textShadowColor="rgba(0,0,0,0.7)"
+                textShadowOffset={{ width: 0, height: 1 }}
+                textShadowRadius={4}
+                opacity={0.95}
+                textTransform="uppercase"
+                letterSpacing={0.5}
+              >
+                {card.occupation}
+              </Paragraph>
+            </YStack>
+            <XStack gap="$3" alignItems="center">
+              <ActionButton
+                icon={X}
+                onPress={onPass}
+                backgroundColor="$card"
+                borderColor="$border"
+                iconColor="$foreground"
+                size="large"
+              />
+              <ActionButton
+                icon={Heart}
+                onPress={onLike}
+                backgroundColor="$brand"
+                borderColor="$brand"
+                iconColor="white"
+                size="large"
+              />
+            </XStack>
+          </XStack>
+        </Animated.View>
+      </Card.Footer>
+      <Animated.View
+        style={summaryContainerStyle}
+        position="absolute"
+        bottom={-120}
+        left={0}
+        right={0}
+        p="$4"
+      >
+        <BlurView
+          intensity={40}
+          tint="dark"
+          style={{ borderRadius: 16, overflow: "hidden" }}
         >
-          {/* Text Content */}
-          <YStack flex={1} gap="$1">
-            <H2
-              fontFamily="$heading"
-              color="$foreground"
-              fontSize="$4"
-              fontWeight="$1"
-              textShadowColor="rgba(0,0,0,0.8)"
-              textShadowOffset={{ width: 0, height: 2 }}
-              textShadowRadius={6}
-              textTransform="uppercase"
-            >
-              {name}, {age}
-            </H2>
+          <YStack
+            p="$4"
+            jc="center"
+            ai="center"
+            borderWidth={1}
+            borderColor="rgba(255,255,255,0.1)"
+            bg="rgba(0,0,0,0.2)"
+            paddingHorizontal={32}
+          >
             <Paragraph
               fontFamily="$body"
               color="$foreground"
-              fontSize="$2"
+              fontSize="$1"
               fontWeight="$1"
-              textShadowColor="rgba(0,0,0,0.7)"
-              textShadowOffset={{ width: 0, height: 1 }}
-              textShadowRadius={4}
-              opacity={0.95}
-              textTransform="uppercase"
-              letterSpacing={0.5}
+              textAlign="center"
             >
-              {occupation}
+              {card.bio}
             </Paragraph>
           </YStack>
-
-          <XStack gap="$3" alignItems="center" marginLeft="$3">
-            <ActionButton
-              icon={X}
-              onPress={onPass || (() => console.log("Pass"))}
-              backgroundColor="$card"
-              borderColor="$border"
-              iconColor="$foreground"
-              size="large"
-            />
-            <ActionButton
-              icon={Heart}
-              onPress={onLike || (() => console.log("Like"))}
-              backgroundColor="$brand"
-              borderColor="$brand"
-              iconColor="$background"
-              size="large"
-            />
-          </XStack>
-        </XStack>
-      </Card.Footer>
+        </BlurView>
+      </Animated.View>
     </Card>
   );
 }

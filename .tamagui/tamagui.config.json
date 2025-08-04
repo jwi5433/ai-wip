@@ -27436,26 +27436,26 @@
       "light": {
         "brand": "#DC6ACF",
         "background": "#F9FAFB",
-        "foreground": "#09090B",
+        "foreground": "#2D2D2D",
         "card": "#FFFFFF",
         "border": "#E5E7EB",
         "success": "#10B981",
         "error": "#EF4444",
         "transparent": "transparent",
-        "shadowColor": "#09090B",
+        "shadowColor": "#2D2D2D",
         "id": "light"
       },
       "dark": {
         "brand": "#DC6ACF",
         "brandHover": "#C85EBD",
-        "background": "#09090B",
+        "background": "#1C1C1C",
         "foreground": "#E5E5E5",
         "card": "#27272A",
         "border": "#1C1917",
         "success": "#10B981",
         "error": "#EF4444",
         "transparent": "transparent",
-        "shadowColor": "#09090B",
+        "shadowColor": "#2D2D2D",
         "id": "dark"
       }
     },
@@ -27472,7 +27472,7 @@
           "isVar": true,
           "key": "$zinc950",
           "name": "c-zinc950",
-          "val": "#09090B",
+          "val": "#2D2D2D",
           "variable": ""
         },
         "white": {
@@ -27550,6 +27550,13 @@
           "key": "$transparent",
           "name": "c-transparent",
           "val": "transparent",
+          "variable": ""
+        },
+        "darkGray": {
+          "isVar": true,
+          "key": "$darkGray",
+          "name": "c-darkGray",
+          "val": "#1C1C1C",
           "variable": ""
         }
       },
@@ -27839,7 +27846,7 @@
         "isVar": true,
         "key": "$zinc950",
         "name": "c-zinc950",
-        "val": "#09090B",
+        "val": "#2D2D2D",
         "variable": ""
       },
       "$color.white": {
@@ -27917,6 +27924,13 @@
         "key": "$transparent",
         "name": "c-transparent",
         "val": "transparent",
+        "variable": ""
+      },
+      "$color.darkGray": {
+        "isVar": true,
+        "key": "$darkGray",
+        "name": "c-darkGray",
+        "val": "#1C1C1C",
         "variable": ""
       },
       "$space.0": {

@@ -4,18 +4,18 @@ import React from "react";
 type ProfileAvatarProps = {
   src: string;
   size?: number;
-  bordered?: boolean;
+  borderWidth?: number;
 };
 
 const ProfileAvatar = React.forwardRef<TamaguiElement, ProfileAvatarProps>(
-  ({ src, size = 50, bordered = false }, ref) => {
+  ({ src, size = 50, borderWidth = 0 }, ref) => {
     return (
       <Avatar
         circular
         size={size}
         ref={ref}
-        borderWidth={bordered ? 2 : 0}
-        borderColor={bordered ? "$brand" : undefined}
+        borderWidth={borderWidth}
+        borderColor={borderWidth > 0 ? "$brand" : undefined}
       >
         <Avatar.Image source={{ uri: src }} />
         <Avatar.Fallback backgroundColor="$brand" />

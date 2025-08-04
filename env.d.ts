@@ -1,5 +1,7 @@
-declare module '@env' {
-  export const GEMINI_API_KEY: string;
-  export const EXPO_PUBLIC_SUPABASE_URL: string;
-  export const EXPO_PUBLIC_SUPABASE_ANON_KEY: string;
+declare namespace NodeJS {
+  interface ProcessEnv {
+    EXPO_PUBLIC_GEMINI_API_KEY: string;
+    EXPO_PUBLIC_SUPABASE_URL: string;
+    EXPO_PUBLIC_SUPABASE_ANON_KEY: string;
+  }
 }

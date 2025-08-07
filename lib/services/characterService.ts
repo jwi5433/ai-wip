@@ -149,16 +149,18 @@ export const generateTemporaryCharacter = async (
 };
 
 export const saveMatchedCharacter = async (
-  character: TemporaryCharacterData,
+  character: any,
 ): Promise<Character | null> => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  delete character.id;
+
   const { data, error } = await supabase
     .from("characters")
-    .insert({ ...character, user_id: user.id })
+    .insert({ ...character, user_id: user.id, is_mock: true })
     .select()
     .single();
 
@@ -178,8 +180,7 @@ export const fetchMatchedCharacters = async (): Promise<Character[]> => {
   const { data, error } = await supabase
     .from("characters")
     .select("*")
-    .eq("user_id", user.id)
-    .eq("is_mock", false);
+    .eq("user_id", user.id);
 
   if (error) {
     console.error("Error fetching matches:", error.message);

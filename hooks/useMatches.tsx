@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-// You can define a simple Character type here for now
 export interface Character {
   id: string;
   name: string;
-  avatar_url: any;
+  avatar_url: string;
+  bio: string;
+  occupation: string;
+  age: number;
+  system_instruction: string;
+  image_prompt: string;
 }
-
-// Mock Data for the "New Matches" list
-const mockMatches: Character[] = [
-  { id: "1", name: "Aria", avatar_url: require("@/assets/images/woman1.png") },
-  { id: "2", name: "Eowyn", avatar_url: require("@/assets/images/woman2.png") },
-  { id: "3", name: "Alita", avatar_url: require("@/assets/images/woman3.png") },
-  { id: "4", name: "Girl", avatar_url: require("@/assets/images/woman1.png") },
-];
 
 export function useMatches() {
   const [matches, setMatches] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Use the mock data instead of fetching from a service
-    setMatches(mockMatches);
-    setLoading(false);
+    fetchMatches();
   }, []);
+
+  const fetchMatches = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    const { data } = await supabase
+      .from("characters")
+      .select("*")
+      .eq("user_id", user.id);
+    setMatches(data || []);
+    setLoading(false);
+  };
 
   return { matches, loading };
 }
+

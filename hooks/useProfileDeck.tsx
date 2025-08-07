@@ -28,10 +28,8 @@ export const useProfileDeck = () => {
     (swipedProfile: TemporaryCharacterData, direction: "left" | "right") => {
       if (direction === "right") {
         console.log(`Liked ${swipedProfile.name}!`);
-        if (Math.random() < 0.5) {
-          console.log(`It's a match with ${swipedProfile.name}!`);
-          saveMatchedCharacter(swipedProfile);
-        }
+        console.log(`It's a match with ${swipedProfile.name}!`);
+        saveMatchedCharacter(swipedProfile);
       } else {
         console.log(`Passed on ${swipedProfile.name}`);
       }

@@ -6,15 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import {
-  Avatar,
-  Button,
-  ScrollView,
-  Text,
-  Theme,
-  XStack,
-  YStack,
-} from "tamagui";
+import { Button, ScrollView, Text, Theme, XStack, YStack } from "tamagui";
 import { ArrowLeft } from "@tamagui/lucide-icons";
 import { useChat } from "@/hooks/useChat";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,22 +19,38 @@ import ProfilePreview from "@/components/ProfilePreview";
 export default function ChatPage() {
   const router = useRouter();
   const params = useLocalSearchParams<{
-    name: string;
-    avatarUrl: string;
-    systemInstruction: string;
-    imagePrompt: string;
+    characterId: string;
+    name?: string;
+    avatarUrl?: string;
+    systemInstruction?: string;
+    imagePrompt?: string;
   }>();
-  const { messages, isLoading, handleSend } = useChat({
-    systemInstruction:
-      params.systemInstruction || "You are a helpful assistant.",
-    selfieImagePrompt: params.imagePrompt || "A selfie of a person.",
+
+  const {
+    messages,
+    character,
+    isLoading,
+    isInitializing,
+    isLoadingOlder,
+    hasMoreMessages,
+    handleSend,
+    loadOlderMessages,
+  } = useChat({
+    characterId: params.characterId,
+    systemInstruction: params.systemInstruction,
+    selfieImagePrompt: params.imagePrompt,
   });
+
   const [inputText, setInputText] = useState("");
   const scrollViewRef = useRef<RNScrollView>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(0);
 
   useEffect(() => {
-    scrollViewRef.current?.scrollToEnd({ animated: true });
-  }, [messages]);
+    if (!isLoadingOlder) {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }
+  }, [messages.length, isLoadingOlder]);
 
   const onSendPress = () => {
     if (inputText.trim()) {
@@ -50,6 +58,63 @@ export default function ChatPage() {
       setInputText("");
     }
   };
+
+  const handleScroll = (event: any) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+
+    if (contentOffset.y <= 50 && hasMoreMessages && !isLoadingOlder) {
+      const currentScrollPosition = contentOffset.y;
+      const currentContentHeight = contentSize.height;
+
+      loadOlderMessages().then(() => {
+        setTimeout(() => {
+          const newContentHeight = contentHeight;
+          const heightDifference = newContentHeight - currentContentHeight;
+
+          scrollViewRef.current?.scrollTo({
+            y: currentScrollPosition + heightDifference,
+            animated: false,
+          });
+        }, 100);
+      });
+    }
+  };
+
+  if (isInitializing) {
+    return (
+      <Theme name="dark">
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#313131" }}>
+          <YStack flex={1} jc="center" ai="center">
+            <ActivityIndicator size="large" color="#DC6ACF" />
+            <Text mt="$4" color="$foreground">
+              Loading chat...
+            </Text>
+          </YStack>
+        </SafeAreaView>
+      </Theme>
+    );
+  }
+
+  if (!character) {
+    return (
+      <Theme name="dark">
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#313131" }}>
+          <YStack flex={1} jc="center" ai="center" p="$4">
+            <Text color="$foreground" textAlign="center">
+              Character not found. This chat may have been deleted.
+            </Text>
+            <Button
+              mt="$4"
+              onPress={() => router.push("/matches")}
+              backgroundColor="$brand"
+            >
+              Back to Matches
+            </Button>
+          </YStack>
+        </SafeAreaView>
+      </Theme>
+    );
+  }
 
   return (
     <Theme name="dark">
@@ -83,12 +148,13 @@ export default function ChatPage() {
                 </YStack>
               </Pressable>
               <ProfilePreview
-                name={params.name || "aria"}
-                avatarSrc={require("@/assets/images/woman1.png")}
+                name={character.name}
+                avatarSrc={character.avatar_url}
                 borderWidth={2}
               />
               <YStack width={40} />
             </XStack>
+
             <ScrollView
               ref={scrollViewRef}
               flex={1}
@@ -96,7 +162,22 @@ export default function ChatPage() {
                 paddingHorizontal: 12,
                 paddingVertical: 10,
               }}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              onContentSizeChange={(width, height) => setContentHeight(height)}
+              onLayout={(event) =>
+                setScrollHeight(event.nativeEvent.layout.height)
+              }
             >
+              {isLoadingOlder && (
+                <YStack p="$4" ai="center">
+                  <ActivityIndicator color="$brand" size="small" />
+                  <Text color="$gray10" fontSize="$1" mt="$1">
+                    Loading older messages...
+                  </Text>
+                </YStack>
+              )}
+
               {messages.map((msg, index) => (
                 <MessageBubble
                   key={msg.id}
@@ -104,7 +185,12 @@ export default function ChatPage() {
                   nextMessage={messages[index + 1]}
                 />
               ))}
-              {isLoading && <ActivityIndicator />}
+
+              {isLoading && (
+                <YStack p="$4" ai="center">
+                  <ActivityIndicator color="$brand" />
+                </YStack>
+              )}
             </ScrollView>
 
             <InputBar

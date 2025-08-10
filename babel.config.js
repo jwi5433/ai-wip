@@ -22,7 +22,7 @@ module.exports = function (api) {
           logTimings: true,
         },
       ],
-      "react-native-reanimated/plugin", // This MUST be last
+      "react-native-reanimated/plugin",
     ],
   };
 };

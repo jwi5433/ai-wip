@@ -8,7 +8,9 @@ const ai = new GoogleGenAI({
   apiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
 });
 
-export async function AiImage(prompt: string): Promise<string | undefined> {
+export type ImageDataUrl = string | undefined;
+
+export async function AiImage(prompt: string): Promise<ImageDataUrl> {
   try {
     const response = await ai.models.generateImages({
       model: "imagen-3.0-generate-002",

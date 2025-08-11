@@ -247,8 +247,8 @@ export function useChat({
 
     storageRef.current.addMessage(characterId, userStoredMessage);
 
+    // CHANGE: Removed the client-generated 'id' to let Supabase generate it.
     const { error: userMsgError } = await supabase.from("messages").insert({
-      id: messageId,
       character_id: characterId,
       user_id: user.id,
       role: "user",
@@ -307,8 +307,8 @@ export function useChat({
 
         storageRef.current.addMessage(characterId, botStoredMessage);
 
+        // CHANGE: Removed the client-generated 'id' to let Supabase generate it.
         await supabase.from("messages").insert({
-          id: botMessageId,
           character_id: characterId,
           user_id: user.id,
           role: "assistant",
@@ -343,8 +343,8 @@ export function useChat({
 
         storageRef.current.addMessage(characterId, botStoredMessage);
 
+        // CHANGE: Removed the client-generated 'id' to let Supabase generate it.
         await supabase.from("messages").insert({
-          id: botMessageId,
           character_id: characterId,
           user_id: user.id,
           role: "assistant",

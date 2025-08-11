@@ -4,7 +4,9 @@ const genAI = new GoogleGenAI({
   apiKey: process.env.EXPO_PUBLIC_GEMINI_API_KEY,
 });
 
-interface Chat {
+const CONVERSATION_WINDOW_SIZE = 10;
+
+export interface Chat {
   history: Content[];
 }
 
@@ -19,7 +21,7 @@ export function startChatWithHistory(
     },
     {
       role: "model",
-      parts: [{ text: "Okay, I got it! I'm ready. Let's chat! 😉" }],
+      parts: [{ text: "Okay, I got it! I'm ready. Let's chat!" }],
     },
   ];
 
@@ -33,19 +35,32 @@ export async function sendMessageToChat(
   message: string,
 ): Promise<string | undefined> {
   try {
+    const fullHistory = chat.history;
+    let historyForAPI: Content[] = fullHistory;
+
+    if (fullHistory.length > CONVERSATION_WINDOW_SIZE + 2) {
+      historyForAPI = [
+        fullHistory[0],
+        fullHistory[1],
+        ...fullHistory.slice(-CONVERSATION_WINDOW_SIZE),
+      ];
+    }
+
+    const conversationForAPI: Content[] = [
+      ...historyForAPI,
+      { role: "user", parts: [{ text: message }] },
+    ];
+
     const model = genAI.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: message,
-      config: {
-        systemInstruction: "You are a helpful assistant.",
-      },
+      contents: conversationForAPI,
     });
 
-    const result = await model; // Wait for the response from Gemini
-    return result.text; // Access the text property directly
+    const result = await model;
+    return result.text;
   } catch (error) {
     console.error("Error sending message to chat:", error);
-    return "Oops, I'm having a little trouble thinking right now. Could you try that again? 🥺";
+    return "Oh no, I'm having a little trouble thinking right now. Could you try that again? 🥺";
   }
 }
 
@@ -58,7 +73,7 @@ export async function generateSingleResponse(
       contents: prompt,
     });
 
-    return result.text; // Access the text property directly
+    return result.text;
   } catch (error) {
     console.error("Error in generateSingleResponse:", error);
     return undefined;
